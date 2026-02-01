@@ -7,6 +7,11 @@ interface TodoItemProps {
 }
 
 export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
+    const isOverdue = todo.dueDate && todo.dueDate < Date.now() && !todo.completed;
+    const formattedDate = todo.dueDate
+        ? new Date(todo.dueDate).toLocaleDateString('ja-JP')
+        : null;
+
     return (
         <div className={`glass-panel p-4 rounded-xl flex items-center justify-between group transition-all duration-300 ${todo.completed ? 'opacity-60' : 'opacity-100'}`}>
             <div className="flex items-center gap-4 flex-1">
@@ -16,14 +21,29 @@ export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
                     onChange={() => onToggle(todo.id)}
                     className="todo-checkbox shrink-0"
                 />
-                <span
-                    className={`text-lg transition-all duration-300 ${todo.completed
-                            ? 'line-through text-slate-400'
-                            : 'text-slate-100'
-                        }`}
-                >
-                    {todo.text}
-                </span>
+                <div className="flex flex-col gap-1">
+                    <span
+                        className={`text-lg transition-all duration-300 ${todo.completed
+                                ? 'line-through text-slate-400'
+                                : 'text-slate-100'
+                            }`}
+                    >
+                        {todo.text}
+                    </span>
+                    <div className="flex gap-2 items-center text-xs">
+                        {todo.category && (
+                            <span className="bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded-full border border-slate-600/50">
+                                {todo.category}
+                            </span>
+                        )}
+                        {formattedDate && (
+                            <span className={`flex items-center gap-1 ${isOverdue ? 'text-red-400 font-bold' : 'text-slate-400'}`}>
+                                <span>📅 {formattedDate}</span>
+                                {isOverdue && <span>(期限切れ)</span>}
+                            </span>
+                        )}
+                    </div>
+                </div>
             </div>
 
             <button
